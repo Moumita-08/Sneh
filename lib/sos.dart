@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart'; // For location
 //import 'package:url_launcher/url_launcher.dart'; // For maps/phone calls
 import 'package:http/http.dart' as http; // For API calls (if needed)
-import 'dart:convert'; // For JSON handling (if needed)
+import 'dart:convert';
+
+import 'package:myapp/nearbyHospital.dart'; // For JSON handling (if needed)
 
 class SOSScreen extends StatefulWidget {
   @override
@@ -44,8 +46,8 @@ class _SOSScreenState extends State<SOSScreen> {
       await _getCurrentLocation(); // Get location if not available
       if (_currentLocation == null) {
         // Handle the case where location is still not available
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not get location.')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Could not get location.')));
         return;
       }
     }
@@ -64,24 +66,25 @@ class _SOSScreenState extends State<SOSScreen> {
     };
 
     try {
-      final response = await http.post(url, body: jsonEncode(data), headers: {'Content-Type': 'application/json'});
+      final response = await http.post(url,
+          body: jsonEncode(data),
+          headers: {'Content-Type': 'application/json'});
       if (response.statusCode == 200) {
         // Success!
         print('SOS sent successfully!');
-         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('SOS sent successfully!')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('SOS sent successfully!')));
       } else {
         // Error
         print('Error sending SOS: ${response.statusCode}');
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error sending SOS.')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error sending SOS.')));
       }
     } catch (e) {
       print('Error sending SOS: $e');
-       ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error sending SOS.')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error sending SOS.')));
     }
-
 
     // 2. (Alternative) Open Maps App with Location (less ideal for automatic dispatch)
     // if (Platform.isAndroid) {
@@ -116,11 +119,23 @@ class _SOSScreenState extends State<SOSScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
-              onPressed: _isSOSActive ? null : _sendSOS,  // Disable button while SOS is active
+              onPressed: () {
+                try {
+                  print("Navigating to HospitalListPage...");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const HospitalListPage()),
+                  );
+                  print("Navigation success!");
+                } catch (e) {
+                  print("Navigation Error: $e");
+                }
+              },
               child: Text(_isSOSActive ? 'Sending SOS...' : 'SOS'),
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.all(20),
-                textStyle: TextStyle(fontSize: 24),
+                padding: const EdgeInsets.all(20),
+                textStyle: const TextStyle(fontSize: 24),
               ),
             ),
             if (_currentLocation != null)

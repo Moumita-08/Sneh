@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/main.dart';
 
 
 class InterestSelectionScreen extends StatefulWidget {
@@ -175,18 +176,20 @@ class ContentSuggestionScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text('Content Suggestions')),
-      body: Center(
-        child: suggestions.isEmpty
-            ? Text('No suggestions found for your selected interests.')
-            : ListView.builder(
-                itemCount: suggestions.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(suggestions[index]),
-                    // You can add more details or actions here, e.g., links to content
-                  );
-                },
-              ),
+      body: GradientBackground(
+        child: Center(
+          child: suggestions.isEmpty
+              ? Text('No suggestions found for your selected interests.')
+              : ListView.builder(
+                  itemCount: suggestions.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(suggestions[index]),
+                      // You can add more details or actions here, e.g., links to content
+                    );
+                  },
+                ),
+        ),
       ),
     );
   }
@@ -197,3 +200,4 @@ class ContentSuggestionScreen extends StatelessWidget {
     // TODO: implement build
     throw UnimplementedError();
   }
+

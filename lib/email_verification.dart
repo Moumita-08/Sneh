@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/dash.dart'; // Import your home screen
+import 'package:myapp/bloc/auth_bloc.dart';
+import 'package:myapp/bloc/auth_event.dart';
+import 'package:myapp/dash.dart';
+import 'package:provider/provider.dart'; // Import your home screen
 
 class EmailVerificationPage extends StatefulWidget {
   @override
@@ -22,35 +25,23 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Enter the OTP sent to your email:',
+              'A verification mail has been sent to your registered email address.',
               style: TextStyle(fontSize: 18),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _otpController,
-              decoration: InputDecoration(
-                hintText: 'Enter OTP',
-                border: OutlineInputBorder(),
-              ),
-            ),
+           
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                if (_otpController.text == _correctOtp) {
-                  // Navigate to Home Screen if OTP is correct
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => HomeScreen(username: '',)),
-                  );
-                } else {
-                  // Show error message if OTP is incorrect
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Incorrect OTP. Please try again.')),
-                  );
-                }
+                context.read<AuthBloc>().add(AuthEventSendEmailVerification());
               },
-              child: Text('Verify OTP'),
+              child: Text('Send Email Verification'),
             ),
+
+            SizedBox(height: 20),
+            ElevatedButton(onPressed: (){
+              context.read<AuthBloc>().add(AuthEventLogout());
+            }, child: Text('Back to Login'))
           ],
         ),
       ),

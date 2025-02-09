@@ -14,11 +14,11 @@ class GameSelectionScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => HomeScreen(username: '',),
-                                ),
-                              );
+            // Navigator.of(context).push(
+            //                     MaterialPageRoute(
+            //                       builder: (context) => HomeScreen(username: '',),
+            //                     ),
+            //                   );
           },
         ),
         title: Text("Hello"),
@@ -55,11 +55,11 @@ class GameSelectionScreen extends StatelessWidget {
             //const Icon(Icons.home, color: Color(0xFF5F9EA0)),
             IconButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => HomeScreen(username: '',),
-                  ),
-                );
+                // Navigator.of(context).push(
+                //   MaterialPageRoute(
+                //     builder: (context) => HomeScreen(username: '',),
+                //   ),
+                // );
               },
               icon: Icon(
                 Icons.home,

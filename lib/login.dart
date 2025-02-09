@@ -194,9 +194,16 @@
 //   }
 // }
 import 'package:flutter/material.dart';
+import 'package:myapp/auth/auth_exceptions.dart';
+import 'package:myapp/bloc/auth_bloc.dart';
+import 'package:myapp/bloc/auth_event.dart';
+import 'package:myapp/bloc/auth_state.dart';
+import 'package:myapp/email_verification.dart';
 import 'package:myapp/email_verification_login.dart';
 import 'package:myapp/signUp.dart';
-import 'package:myapp/otp_verification.dart'; // Import the new OTP verification page
+import 'package:myapp/otp_verification.dart';
+import 'package:provider/provider.dart'; // Import the new OTP verification page
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -205,136 +212,176 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xFF5F8F83),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                SizedBox(height: 20),
-                // Logo
-                Text(
-                  'Sneh',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 40,
-                    fontFamily: 'Script',
-                    fontWeight: FontWeight.w500,
+    return BlocListener<AuthBloc, AuthState>(
+       listener: (context, state) async {
+        if (state is AuthStateLoggedOut) {
+          if (state.exception is UserNotFoundAuthException) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('User not found'),
+              ),
+            );
+          } else if (state.exception is WrongPasswordAuthException) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Wrong password'),
+              ),
+            );
+          } else if (state.exception is GenericAuthException) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('An error occurred'),
+              ),
+            );
+          }
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Color(0xFF5F8F83),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  SizedBox(height: 20),
+                  // Logo
+                  Text(
+                    'Sneh',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 40,
+                      fontFamily: 'Script',
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-                Text(
-                  'The Essence of Care and Health',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
+                  Text(
+                    'The Essence of Care and Health',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-                SizedBox(height: 30),
-                // Login Card
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Welcome',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      // Email Input
-                      TextField(
-                        controller: _emailController,
-                        decoration: InputDecoration(
-                          hintText: 'Enter your Email',
-                          prefixIcon: Icon(Icons.email_outlined),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Colors.grey[300]!,
-                              width: 1,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Colors.grey[300]!,
-                              width: 1,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 30),
-                      // Email Verification Button
-                      ElevatedButton(
-                        onPressed: () {
-                          // Navigate to OTP Verification Page
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => OtpVerificationPage(email: _emailController.text),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF5F8F83),
-                          padding: EdgeInsets.symmetric(vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Text(
-                          'Verify Email',
+                  SizedBox(height: 30),
+                  // Login Card
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Welcome',
                           style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
-                      SizedBox(height: 20),
-                      // Create Account Link
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Don't have an account? ",
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 14,
+                        SizedBox(height: 20),
+                        // Email Input
+                        TextField(
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            hintText: 'Enter your Email',
+                            prefixIcon: Icon(Icons.email_outlined),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: Colors.grey[300]!,
+                                width: 1,
+                              ),
                             ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => SignupPage(),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              'Create',
-                              style: TextStyle(
-                                color: Color(0xFF5F8F83),
-                                fontWeight: FontWeight.w500,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: Colors.grey[300]!,
+                                width: 1,
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                        SizedBox(height: 30),
+      
+                        TextField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            hintText: 'Enter your Password',
+                            prefixIcon: Icon(Icons.lock_outline),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: Colors.grey[300]!,
+                                width: 1,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: Colors.grey[300]!,
+                                width: 1,
+                              ),
+                            ),
+                          ),
+                          
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            context.read<AuthBloc>().add(AuthEventRegister(_emailController.text, _passwordController.text,));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF5F8F83),
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            'Login',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        // Create Account Link
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Don't have an account? ",
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 14,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                context.read<AuthBloc>().add(AuthEventShouldRegister());
+                              },
+                              child: Text(
+                                'Create',
+                                style: TextStyle(
+                                  color: Color(0xFF5F8F83),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

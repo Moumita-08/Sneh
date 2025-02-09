@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/auth/auth_user.dart';
 import 'package:myapp/calender.dart';
 import 'package:myapp/chatbot.dart';
 import 'package:myapp/games.dart';
@@ -9,9 +10,9 @@ import 'package:myapp/main.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomeScreen extends StatelessWidget {
-  final String username; // Store the username
+  final AuthUser? authUser; // Store the username
 
-  const HomeScreen({super.key, required this.username});
+  const HomeScreen({super.key, required this.authUser,});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +45,7 @@ class HomeScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Hello, $username', // Use the username variable
+                                  'Hello, Moumita', // Use the username variable
                                   style: const TextStyle(color: Colors.white),
                                 ),
                                 // const Text(
@@ -105,7 +106,7 @@ class HomeScreen extends StatelessWidget {
                               (index) => Container(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 8,
-                                  horizontal: 12,
+                                  horizontal: 8,
                                 ),
                                 decoration: BoxDecoration(
                                   color: index == 1
